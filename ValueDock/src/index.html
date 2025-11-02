@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ValueDock Fathom Loader</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      padding: 16px;
+      color: #333;
+      background: #fff;
+    }
+
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #000;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #666;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: inherit;
+      margin-bottom: 12px;
+    }
+
+    input[type="number"] {
+      width: 100px;
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .input-hint {
+      font-size: 10px;
+      color: #999;
+      margin-top: -8px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #18A0FB;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0D8FE8;
+    }
+
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      margin-left: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-secondary:disabled {
+      background: #f5f5f5;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .meeting-list {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .meeting-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 11px;
+    }
+
+    .meeting-item:last-child {
+      border-bottom: none;
+    }
+
+    .meeting-item:hover {
+      background: #f5f5f5;
+    }
+
+    .meeting-item.selected {
+      background: #E3F2FD;
+    }
+
+    .meeting-date {
+      color: #666;
+      font-size: 10px;
+      margin-right: 8px;
+    }
+
+    .meeting-title {
+      color: #000;
+      font-weight: 500;
+    }
+
+    .status-banner {
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 11px;
+      display: none;
+    }
+
+    .status-banner.error {
+      background: #FFEBEE;
+      color: #C62828;
+      border: 1px solid #FFCDD2;
+      display: block;
+    }
+
+    .status-banner.empty {
+      background: #FFF3E0;
+      color: #E65100;
+      border: 1px solid #FFE0B2;
+      display: block;
+    }
+
+    .status-banner.loading {
+      background: #E3F2FD;
+      color: #1976D2;
+      border: 1px solid #BBDEFB;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #18A0FB;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .debug-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #ddd;
+    }
+
+    .debug-toggle {
+      font-size: 10px;
+      color: #999;
+      cursor: pointer;
+      user-select: none;
+      margin-bottom: 8px;
+    }
+
+    .debug-toggle:hover {
+      color: #666;
+    }
+
+    .debug-info {
+      display: none;
+      background: #f5f5f5;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #666;
+      font-family: monospace;
+    }
+
+    .debug-info.visible {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #999;
+      font-size: 11px;
+    }
+
+    .help-text {
+      font-size: 10px;
+      color: #999;
+      margin-top: -8px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>ValueDock Fathom Loader</h2>
+
+  <!-- Status Banner -->
+  <div id="statusBanner" class="status-banner"></div>
+
+  <!-- Configuration Section -->
+  <div class="section">
+    <label for="proxyUrl">Proxy URL (optional if env is set)</label>
+    <input type="text" id="proxyUrl" placeholder="https://your-proxy.supabase.co/functions/v1/...">
+    <div class="input-hint">Only needed if NEXT_PUBLIC_PROXY_URL is not set</div>
+
+    <label for="domain">Primary Domain *</label>
+    <input type="text" id="domain" placeholder="dockeryai.com" required>
+
+    <label for="aliases">Alias Domains (comma-separated)</label>
+    <textarea id="aliases" placeholder="example.com, another.com"></textarea>
+
+    <label for="emails">Specific Emails (comma-separated)</label>
+    <textarea id="emails" placeholder="user@gmail.com, contact@example.com"></textarea>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div>
+        <label for="since">Since (optional)</label>
+        <input type="datetime-local" id="since">
+      </div>
+      <div>
+        <label for="until">Until (optional)</label>
+        <input type="datetime-local" id="until">
+      </div>
+    </div>
+
+    <label for="limit">Limit per request</label>
+    <input type="number" id="limit" value="50" min="1" max="100">
+    <div class="input-hint">Max 100 per request. Use "Load More" for additional pages.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Action Buttons -->
+  <div class="button-group">
+    <button class="btn-primary" id="loadBtn">Load Meetings</button>
+    <button class="btn-secondary" id="loadMoreBtn" disabled>Load More</button>
+  </div>
+
+  <!-- Meeting List -->
+  <div id="meetingList" class="meeting-list">
+    <div class="empty-state">
+      No meetings loaded yet.<br>
+      Enter a domain and click "Load Meetings".
+    </div>
+  </div>
+
+  <!-- Apply Button -->
+  <button class="btn-primary" id="applyBtn" disabled style="width: 100%;">Apply to Layers</button>
+  
+  <div class="help-text" style="margin-top: 8px;">
+    Create text layers named: Title, Date, Summary, Bullets, TranscriptLink
+  </div>
+
+  <!-- Debug Section -->
+  <div class="debug-section">
+    <div class="debug-toggle" id="debugToggle">▶ Debug Info</div>
+    <div class="debug-info" id="debugInfo">
+      No debug data yet.
+    </div>
+  </div>
+
+  <script>
+    // State
+    let meetings = [];
+    let selectedMeetingIndex = null;
+    let nextCursor = null;
+    let isLoading = false;
+    let proxyUrlFromEnv = false;
+
+    // DOM Elements
+    const proxyUrlInput = document.getElementById('proxyUrl');
+    const domainInput = document.getElementById('domain');
+    const aliasesInput = document.getElementById('aliases');
+    const emailsInput = document.getElementById('emails');
+    const sinceInput = document.getElementById('since');
+    const untilInput = document.getElementById('until');
+    const limitInput = document.getElementById('limit');
+    const loadBtn = document.getElementById('loadBtn');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const applyBtn = document.getElementById('applyBtn');
+    const meetingList = document.getElementById('meetingList');
+    const statusBanner = document.getElementById('statusBanner');
+    const debugToggle = document.getElementById('debugToggle');
+    const debugInfo = document.getElementById('debugInfo');
+
+    // Initialize - request proxy URL from plugin
+    parent.postMessage({ pluginMessage: { type: 'get-proxy-url' } }, '*');
+
+    // Event Listeners
+    loadBtn.addEventListener('click', handleLoadMeetings);
+    loadMoreBtn.addEventListener('click', handleLoadMore);
+    applyBtn.addEventListener('click', handleApplyMeeting);
+    proxyUrlInput.addEventListener('change', handleProxyUrlChange);
+    debugToggle.addEventListener('click', toggleDebug);
+
+    // Handle messages from plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      console.log('[UI] Received message:', msg.type);
+
+      switch (msg.type) {
+        case 'proxy-url':
+          handleProxyUrlReceived(msg.value, msg.source);
+          break;
+        case 'loading':
+          handleLoadingState(msg.isLoading);
+          break;
+        case 'meetings':
+          handleMeetingsReceived(msg.items, msg.next_cursor, msg.debug);
+          break;
+        case 'error':
+          showError(msg.message);
+          break;
+      }
+    };
+
+    function handleProxyUrlReceived(value, source) {
+      if (source === 'env') {
+        proxyUrlFromEnv = true;
+        proxyUrlInput.value = value;
+        proxyUrlInput.disabled = true;
+        proxyUrlInput.placeholder = 'Using NEXT_PUBLIC_PROXY_URL from environment';
+      } else {
+        proxyUrlInput.value = value;
+      }
+    }
+
+    function handleProxyUrlChange() {
+      if (!proxyUrlFromEnv) {
+        parent.postMessage({ 
+          pluginMessage: { 
+            type: 'save-proxy-url', 
+            value: proxyUrlInput.value 
+          } 
+        }, '*');
+      }
+    }
+
+    function handleLoadMeetings() {
+      const domain = domainInput.value.trim();
+      if (!domain) {
+        showError('Please enter a domain.');
+        return;
+      }
+
+      const payload = buildPayload();
+      
+      // Reset state
+      meetings = [];
+      selectedMeetingIndex = null;
+      nextCursor = null;
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'fetch-meetings', 
+          payload: payload,
+          cursor: null
+        } 
+      }, '*');
+    }
+
+    function handleLoadMore() {
+      if (!nextCursor) return;
+      
+      const payload = buildPayload();
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'fetch-meetings', 
+          payload: payload,
+          cursor: nextCursor
+        } 
+      }, '*');
+    }
+
+    function handleApplyMeeting() {
+      if (selectedMeetingIndex === null) {
+        showError('Please select a meeting first.');
+        return;
+      }
+
+      const meeting = meetings[selectedMeetingIndex];
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'apply-meeting', 
+          meeting: meeting 
+        } 
+      }, '*');
+    }
+
+    function buildPayload() {
+      const aliases = aliasesInput.value
+        .split(',')
+        .map(a => a.trim())
+        .filter(Boolean);
+
+      const emails = emailsInput.value
+        .split(',')
+        .map(e => e.trim())
+        .filter(Boolean);
+
+      const since = sinceInput.value ? new Date(sinceInput.value).toISOString() : undefined;
+      const until = untilInput.value ? new Date(untilInput.value).toISOString() : undefined;
+      const limit = parseInt(limitInput.value) || 50;
+
+      return {
+        domain: domainInput.value.trim(),
+        aliases: aliases,
+        emails: emails,
+        since: since,
+        until: until,
+        limit: limit
+      };
+    }
+
+    function handleLoadingState(loading) {
+      isLoading = loading;
+      
+      if (loading) {
+        showLoading();
+        loadBtn.disabled = true;
+        loadMoreBtn.disabled = true;
+        applyBtn.disabled = true;
+      } else {
+        hideStatus();
+        loadBtn.disabled = false;
+        updateLoadMoreButton();
+        updateApplyButton();
+      }
+    }
+
+    function handleMeetingsReceived(items, cursor, debug) {
+      meetings = items;
+      nextCursor = cursor;
+      
+      renderMeetingList();
+      updateLoadMoreButton();
+      updateDebugInfo(debug);
+      
+      if (meetings.length === 0) {
+        showEmpty();
+      }
+    }
+
+    function renderMeetingList() {
+      if (meetings.length === 0) {
+        meetingList.innerHTML = '<div class="empty-state">No meetings found.<br>Try adjusting your filters.</div>';
+        return;
+      }
+
+      meetingList.innerHTML = meetings.map((meeting, index) => {
+        const date = new Date(meeting.date);
+        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+        
+        return `
+          <div class="meeting-item ${index === selectedMeetingIndex ? 'selected' : ''}" 
+               data-index="${index}">
+            <span class="meeting-date">${dateStr}</span>
+            <span class="meeting-title">${escapeHtml(meeting.title || 'Untitled')}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      meetingList.querySelectorAll('.meeting-item').forEach(item => {
+        item.addEventListener('click', () => {
+          selectedMeetingIndex = parseInt(item.dataset.index);
+          renderMeetingList();
+          updateApplyButton();
+        });
+      });
+    }
+
+    function updateLoadMoreButton() {
+      loadMoreBtn.disabled = !nextCursor || isLoading;
+    }
+
+    function updateApplyButton() {
+      applyBtn.disabled = selectedMeetingIndex === null || isLoading;
+    }
+
+    function updateDebugInfo(debug) {
+      if (!debug) return;
+      
+      debugInfo.textContent = JSON.stringify(debug, null, 2);
+    }
+
+    function toggleDebug() {
+      debugInfo.classList.toggle('visible');
+      debugToggle.textContent = debugInfo.classList.contains('visible') 
+        ? '▼ Debug Info' 
+        : '▶ Debug Info';
+    }
+
+    function showError(message) {
+      statusBanner.className = 'status-banner error';
+      statusBanner.textContent = '⚠️ ' + message;
+    }
+
+    function showEmpty() {
+      statusBanner.className = 'status-banner empty';
+      statusBanner.textContent = 'ℹ️ No meetings found. Try adding emails or widening the date range.';
+    }
+
+    function showLoading() {
+      statusBanner.className = 'status-banner loading';
+      statusBanner.innerHTML = '<div class="spinner"></div><span>Loading meetings...</span>';
+    }
+
+    function hideStatus() {
+      statusBanner.className = 'status-banner';
+      statusBanner.textContent = '';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+{
+  "name": "@your-org/multi-tenant-admin",
+  "version": "1.0.0",
+  "description": "Complete multi-tenant administration system with user management, role-based permissions, and organization hierarchy",
+  "author": "Your Organization",
+  "license": "MIT",
+  "keywords": [
+    "multi-tenant",
+    "admin",
+    "user-management",
+    "rbac",
+    "permissions",
+    "organization",
+    "saas",
+    "react",
+    "supabase",
+    "typescript"
+  ],
+  "main": "index.ts",
+  "types": "types.ts",
+  "files": [
+    "components/",
+    "hooks/",
+    "utils/",
+    "backend/",
+    "index.ts",
+    "types.ts",
+    "README.md",
+    "QUICK_START.md",
+    "INTEGRATION_GUIDE.md"
+  ],
+  "scripts": {
+    "dev": "echo 'This is a module - import into your app'",
+    "build": "echo 'No build step required'",
+    "test": "echo 'Import into your app and test there'"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "@supabase/supabase-js": "^2.0.0",
+    "lucide-react": "*",
+    "sonner": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "Your repository URL"
+  },
+  "homepage": "Your homepage URL",
+  "bugs": {
+    "url": "Your issues URL"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "module-info": {
+    "extractedFrom": "ValueDock® ROI Calculator",
+    "status": "production-ready",
+    "features": [
+      "User management",
+      "Tenant management",
+      "Organization management",
+      "Role-based permissions",
+      "Context switching",
+      "Backup & restore",
+      "Mobile responsive"
+    ],
+    "roles": [
+      "master_admin",
+      "tenant_admin",
+      "org_admin",
+      "user"
+    ],
+    "backend": {
+      "runtime": "Supabase Edge Functions (Deno)",
+      "framework": "Hono",
+      "database": "Supabase KV Store",
+      "auth": "Supabase Auth + JWT"
+    },
+    "frontend": {
+      "framework": "React 18+",
+      "styling": "Tailwind CSS",
+      "components": "shadcn/ui",
+      "icons": "Lucide React",
+      "notifications": "Sonner"
+    },
+    "documentation": [
+      "README.md - Overview & features",
+      "QUICK_START.md - 5-minute setup",
+      "INTEGRATION_GUIDE.md - Full integration",
+      "REFERENCE_TO_VALUEDOCK.md - Maps to original",
+      "MODULE_MANIFEST.md - Complete spec",
+      "VISUAL_GUIDE.md - Visual documentation",
+      "EXAMPLE_USAGE.tsx - Code examples",
+      "backend/BACKEND_SETUP.md - Server setup"
+    ]
+  },
+  "compatibility": {
+    "frameworks": [
+      "Next.js",
+      "Vite",
+      "Remix",
+      "Create React App"
+    ],
+    "hosting": [
+      "Vercel",
+      "Netlify",
+      "Cloudflare Pages",
+      "AWS",
+      "Any platform"
+    ],
+    "databases": [
+      "Supabase (required)",
+      "PostgreSQL (via Supabase)"
+    ],
+    "auth": [
+      "Supabase Auth (required)"
+    ]
+  },
+  "size": {
+    "total": "~500 KB",
+    "components": "~300 KB",
+    "backend": "~150 KB",
+    "utils": "~50 KB"
+  }
+}

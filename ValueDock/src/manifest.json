@@ -1,0 +1,16 @@
+{
+  "name": "ValueDock Fathom Loader",
+  "id": "valuedock-fathom-loader",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "index.html",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "*"
+    ],
+    "reasoning": "This plugin needs to fetch Fathom meeting data from a user-configured proxy endpoint."
+  }
+}
