@@ -43,3 +43,6 @@ compdef
 # Vite
 .vite/
 vite.config.ts.timestamp-*
+
+# Build Runner Feature Registry
+.buildrunner/versions/*.json
