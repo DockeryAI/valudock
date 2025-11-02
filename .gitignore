@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+ValueDock/node_modules/
+package-lock.json
+ValueDock/package-lock.json
+
+# Build outputs
+dist/
+build/
+ValueDock/dist/
+ValueDock/build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+compdef
+*.tmp
+
+# Build Runner temp files
+.runner/tmp/
+
+# Vite
+.vite/
+vite.config.ts.timestamp-*

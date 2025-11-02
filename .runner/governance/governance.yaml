@@ -1,0 +1,72 @@
+version: "2.0"
+project:
+  name: "ValuDock"
+  type: "web-application"
+  framework: "react-typescript-vite"
+
+governance:
+  spec_file: "docs/ValuDock-spec.md"
+  state_file: "state.json"
+  primer_file: ".runner/governance/primer.md"
+
+  rules:
+    - id: "progress-display"
+      description: "Always display progress in exact format"
+      enforce: true
+      format: "Phase <current> of <total_phases> - Step <current> of <total_steps>"
+
+    - id: "spec-sync"
+      description: "State must match spec at all times"
+      enforce: true
+      validation: "br-sync"
+
+    - id: "auto-commit"
+      description: "All changes must be committed and pushed to GitHub"
+      enforce: true
+
+    - id: "full-file-edits"
+      description: "When editing files, provide FULL file content (not diffs)"
+      enforce: true
+
+    - id: "file-open-commands"
+      description: "Emit 'open -e <file>' before referencing files (unless BR_SKIP_OPEN=1)"
+      enforce: true
+      exempt_when: "BR_SKIP_OPEN=1"
+
+    - id: "qa-plain-text"
+      description: "Q&A responses must be plain text"
+      enforce: true
+
+    - id: "actions-fenced-blocks"
+      description: "Actions must use fenced zsh code blocks"
+      enforce: true
+      language: "zsh"
+
+    - id: "runtime-totals"
+      description: "Auto-calculate phase/step totals from spec at runtime"
+      enforce: true
+      tool: "br-autophases"
+
+commands:
+  sync: "br-sync"
+  guard: "br-guard"
+  autophases: "br-autophases"
+  progress: "br-progress"
+
+workflow:
+  after_change:
+    - "br-sync"
+    - "br-guard"
+    - "git add ."
+    - "git commit -m '<change description>'"
+    - "git push"
+
+git:
+  auto_commit: true
+  auto_push: true
+  branch: "main"
+  remote: "origin"
+
+output:
+  format: "markdown"
+  code_blocks: "zsh"
