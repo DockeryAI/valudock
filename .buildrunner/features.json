@@ -1,9 +1,9 @@
 {
   "project": "ValuDock",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "status": "in_progress",
-  "last_updated": "2025-11-02T13:55:00Z",
-  "description": "Multi-Tenant Business Value & ROI Management Platform with sophisticated NPV/IRR calculation engine, AI-powered proposal generation, Fathom meeting intelligence integration, and comprehensive admin tools for enterprise deployment.",
+  "last_updated": "2025-11-02T18:00:00Z",
+  "description": "Focused ROI Calculation Engine for business value modeling with sophisticated NPV/IRR calculations, multi-tenant architecture, and Sales Assistant integration with Fathom meeting intelligence for AI-powered proposal generation.",
 
   "features": [
     {
@@ -53,15 +53,53 @@
     },
     {
       "id": "proposal-generation",
-      "name": "AI-Powered Proposal Generation",
+      "name": "AI-Powered Proposal Generation (DEPRECATED)",
+      "status": "deprecated",
+      "version": "1.0.0",
+      "priority": "low",
+      "description": "Legacy proposal builder - being migrated to Sales Assistant. Will be removed in v0.3.0. Use 'Export to Sales Assistant' feature instead.",
+      "components": ["components/ProposalContentBuilder.tsx", "components/ProposalAgentRunner.tsx", "components/GammaIntegration.tsx"],
+      "apis": ["/proposal-content/*", "/proposal-roi/*"],
+      "tests": "working",
+      "docs": [],
+      "migration_target": "sales-assistant",
+      "removal_version": "0.3.0"
+    },
+    {
+      "id": "sales-assistant-integration",
+      "name": "Sales Assistant Integration with Fathom Meetings",
       "status": "complete",
       "version": "1.0.0",
-      "priority": "high",
-      "description": "AI-powered proposal creation with 5 sections, Gamma export integration, and presentation mode for stakeholder communication.",
-      "components": ["components/ProposalGeneration.tsx", "services/proposalService.ts"],
-      "apis": ["/proposals/*"],
+      "priority": "critical",
+      "description": "Complete webhook-based integration to export ROI data to Sales Assistant for AI proposal generation. Includes customer identification (company name, email domain, contacts), pre-send validation to check for Fathom meetings, automatic meeting linking via email domain matching, and AI synthesis of meeting transcripts. Proposals include insights from both ValuDock ROI data and Fathom conversation intelligence.",
+      "components": [
+        "components/ExportToProposalButton.tsx",
+        "Customer information form (company, domain, contacts)",
+        "Pre-send validation (check-meetings API)",
+        "Meeting warning system"
+      ],
+      "apis": [
+        "/functions/v1/valuedock-webhook (Sales Assistant)",
+        "/functions/v1/check-meetings-for-company (Sales Assistant)"
+      ],
+      "features": [
+        "Company name identification",
+        "Email domain matching for Fathom meetings",
+        "Main contact + multiple additional contacts",
+        "Pre-send validation: Check if meetings exist before export",
+        "Warning display if no meetings found",
+        "User decides to proceed or cancel",
+        "Automatic meeting linking in Sales Assistant",
+        "AI synthesis of meeting transcripts (goals, challenges, stakeholders)",
+        "Rich proposal context from customer conversations"
+      ],
       "tests": "working",
-      "docs": []
+      "docs": [
+        "INTEGRATION_PROJECT_PLAN.md",
+        "OPENROUTER_LLM_STRATEGY.md",
+        "../sales-assistant/VALUDOCK_INTEGRATION_GUIDE.md",
+        "../sales-assistant/FATHOM_INTEGRATION_SUMMARY.md"
+      ]
     },
     {
       "id": "fathom-integration",
@@ -223,18 +261,19 @@
 
   "metrics": {
     "features_complete": 11,
+    "features_deprecated": 1,
     "features_in_progress": 2,
     "features_planned": 8,
-    "completion_percentage": 80,
+    "completion_percentage": 78,
     "typescript_files": 163,
     "react_components": 60,
     "ui_library_components": 49,
-    "api_endpoints": 80,
+    "api_endpoints": 81,
     "markdown_docs": 942,
-    "supabase_edge_functions": 4,
+    "supabase_edge_functions": 5,
     "server_code_lines": 8348,
     "services": 7,
-    "total_commits": 4
+    "total_commits": 5
   },
 
   "tech_stack": {
@@ -242,7 +281,8 @@
     "frameworks": ["React 18.3.1", "Vite 6.3.5", "Hono", "Deno"],
     "ui_libraries": ["Radix UI (49 components)", "TailwindCSS", "Recharts", "React Hook Form"],
     "infrastructure": ["Supabase", "PostgreSQL", "Supabase Auth", "Supabase Storage", "Supabase Real-time"],
-    "integrations": ["Fathom API", "OpenAI API", "Gamma API"],
+    "integrations": ["Fathom API", "OpenRouter API", "Sales Assistant (webhook)"],
+    "ai_models": ["Claude 3.5 Sonnet", "GPT-4o-mini", "Claude 3 Haiku", "Gemini Flash 1.5"],
     "tools": ["Git", "jsPDF", "XLSX", "date-fns"]
   }
 }
