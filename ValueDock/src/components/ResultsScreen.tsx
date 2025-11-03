@@ -10,8 +10,9 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine, BarChart, Bar, Legend, Tooltip as RechartsTooltip } from 'recharts';
-import { TrendingUp, Clock, DollarSign, Target, Download, Calculator, PieChart, Users, BarChart3, Filter, HelpCircle } from 'lucide-react';
+import { TrendingUp, Clock, DollarSign, Target, Download, Calculator, PieChart, Users, BarChart3, Filter, HelpCircle, ChevronDown, FileText, Send } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { InputData, ROIResults, CashflowData, formatCurrency, formatPercentage, formatNumber, getMonthlyTaskVolume, getTimePerTaskInMinutes, generateCashflowData } from './utils/calculations';
 import { ROI } from '../services/roi';
 import { CFOSummaryDashboard } from './CFOSummaryDashboard';
@@ -22,6 +23,7 @@ import { InternalCostsReports } from './InternalCostsReports';
 import { LandscapePrompt } from './LandscapePrompt';
 import { useRequiresLandscape } from './ui/use-landscape';
 import { mustArray } from '../utils/arrayHelpers';
+import { ExportToProposalButton } from './ExportToProposalButton';
 
 interface ResultsScreenProps {
   data: InputData;
@@ -627,10 +629,38 @@ export function ResultsScreen({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button onClick={onExport} className="gap-1 md:gap-2 text-xs md:text-sm">
+          {/* Export Options */}
+          <Button
+            variant="outline"
+            onClick={onExport}
+            className="gap-1 md:gap-2 text-xs md:text-sm"
+          >
             <Download className="h-4 w-4 flex-shrink-0" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">Export Report</span>
+            <span className="sm:hidden">Export</span>
           </Button>
+
+          {/* Export to Sales Assistant with Meetings Integration */}
+          <ExportToProposalButton
+            dealId={`deal-${Date.now()}`}
+            organizationId={data.organizationName || 'Organization'}
+            organizationWebsite={data.website}
+            tenantId={data.tenantId || 'default-tenant'}
+            userId={data.userId}
+            roiSummary={{
+              annual_savings: finalResults.annualNetSavings,
+              payback_months: finalResults.paybackPeriod,
+              processes_count: safeProcesses.length,
+            }}
+            onSuccess={(exportId, proposalId) => {
+              console.log(`[Export] Success - Export ID: ${exportId}, Proposal ID: ${proposalId}`);
+            }}
+            onError={(error) => {
+              console.error('[Export] Error:', error);
+            }}
+            variant="default"
+            size="md"
+          />
         </div>
       </div>
 
